@@ -17,6 +17,17 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
+//******************Code to deploy this on Render*******************************
+
+const express = require('express');
+const app = express();
+
+app.listen(4000, () => {
+	console.log(`Listening on port ${port}`);
+});
+
+//*******************code to deploy on render ends here*************************
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -67,15 +78,11 @@ client.on('messageCreate', async (message) => {
 			file = file.split('.')[0];
 			const labelStartIndex = file.search(/[A-Za-z]/);
 			const emoji = file.substring(0, labelStartIndex);
-			return (
-				new ButtonBuilder()
-					.setCustomId(`audio_${index}`)
-					.setStyle(ButtonStyle.Secondary)
-					// .setLabel(file);
-					.setLabel(file.substring(labelStartIndex))
-					// .setEmoji(file.substring(0, labelStartIndex + 1))
-					.setEmoji(emoji)
-			);
+			return new ButtonBuilder()
+				.setCustomId(`audio_${index}`)
+				.setStyle(ButtonStyle.Secondary)
+				.setLabel(file.substring(labelStartIndex))
+				.setEmoji(emoji);
 		});
 
 		// Create action rows to hold the buttons (max 5 buttons per row)
@@ -105,6 +112,8 @@ client.on('messageCreate', async (message) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isButton()) return;
+
+	// if (interaction.customId === 'Stop') return;
 
 	// Extract the audio file index from the button ID
 	const fileIndex = parseInt(interaction.customId.split('_')[1]);
@@ -168,6 +177,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	client.on('messageCreate', async (message) => {
 		if (message.content === 'vc stop') {
 			player.stop();
+		}
+	});
+
+	client.once(Events.InteractionCreate, async (interactionStop) => {
+		if (!interactionStop.isButton()) return;
+
+		if (interactionStop.customId === 'Stop') {
+			player.stop();
+			await interactionStop.deferUpdate();
 		}
 	});
 });
