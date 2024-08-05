@@ -31,7 +31,7 @@ jobs:
         uses: "azure/aci-deploy@v1"
         with:
           resource-group: ${{ secrets.RESOURCE_GROUP }}
-          dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+          dns-name-label: run-${{ github.run_number }}
           image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/allocationenginerepo:${{ github.sha }}
           cpu: 1
           memory: 1.5
