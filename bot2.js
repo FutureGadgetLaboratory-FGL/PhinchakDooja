@@ -12,6 +12,7 @@ const {
 	createAudioPlayer,
 	createAudioResource,
 	VoiceConnectionStatus,
+	AudioPlayerStatus,
 } = require('@discordjs/voice');
 const path = require('path');
 const fs = require('fs');
@@ -28,7 +29,24 @@ const client = new Client({
 });
 
 let voiceConnection; // Global variable to track the voice connection
-const activePlayers = new Map(); // Map to track active players
+const MAX_PLAYERS = 5; // Maximum number of concurrent audio players
+const players = []; // Array to hold the audio players
+const playerQueue = []; // Queue to track the usage of players
+
+// Initialize the audio players and add them to the queue
+for (let i = 0; i < MAX_PLAYERS; i++) {
+	const player = createAudioPlayer();
+	player.on(AudioPlayerStatus.Idle, () => {
+		// Move the idle player to the front of the queue
+		const index = playerQueue.indexOf(player);
+		if (index > -1) {
+			playerQueue.splice(index, 1);
+		}
+		playerQueue.unshift(player);
+	});
+	players.push(player);
+	playerQueue.push(player);
+}
 
 client.once('ready', () => {
 	console.log('Bot is ready!');
@@ -131,8 +149,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		});
 	}
 
-	// Create a new audio player and resource for each sound
-	const player = createAudioPlayer();
+	// Find the next available player
+	let player = playerQueue.find(p => p.state.status === AudioPlayerStatus.Idle);
+
+	// If all players are busy, use the least recently used player
+	if (!player) {
+		player = playerQueue.pop();
+	}
+
+	// Create a new audio resource for the selected sound
 	const resource = createAudioResource(
 		path.join(__dirname, 'audio', selectedFile)
 	);
@@ -140,8 +165,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	player.play(resource);
 	voiceConnection.subscribe(player);
 
-	// Store the player in the active players map
-	activePlayers.set(interaction.customId, player);
+	// Add the player back to the queue
+	playerQueue.unshift(player);
 
 	await interaction.deferUpdate();
 	// await interaction.followUp(`Now playing: ${selectedFile}`);
