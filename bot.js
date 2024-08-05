@@ -11,7 +11,6 @@ const {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
-	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } = require('@discordjs/voice');
 const path = require('path');
@@ -64,12 +63,20 @@ client.on('messageCreate', async (message) => {
 		}
 
 		// Create buttons for each audio file
-		const buttons = audioFiles.map((file, index) =>
-			new ButtonBuilder()
-				.setCustomId(`audio_${index}`)
-				.setLabel(file.split('.')[0])
-				.setStyle(ButtonStyle.Primary)
-		);
+		const buttons = audioFiles.map((file, index) => {
+			file = file.split('.')[0];
+			const labelStartIndex = file.search(/[A-Za-z]/);
+			const emoji = file.substring(0, labelStartIndex);
+			return (
+				new ButtonBuilder()
+					.setCustomId(`audio_${index}`)
+					.setStyle(ButtonStyle.Secondary)
+					// .setLabel(file);
+					.setLabel(file.substring(labelStartIndex))
+					// .setEmoji(file.substring(0, labelStartIndex + 1))
+					.setEmoji(emoji)
+			);
+		});
 
 		// Create action rows to hold the buttons (max 5 buttons per row)
 		const rows = [];
@@ -84,6 +91,7 @@ client.on('messageCreate', async (message) => {
 					.setCustomId('Stop')
 					.setLabel('Stop')
 					.setStyle(ButtonStyle.Danger)
+					.setEmoji('⛔')
 			)
 		);
 
