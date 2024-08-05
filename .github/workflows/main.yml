@@ -41,3 +41,5 @@ jobs:
           name: phinchakdooja
           location: "central india"
           restart-policy: OnFailure
+          environment-variables: |
+            TOKEN=${{ secrets.TOKEN }}
