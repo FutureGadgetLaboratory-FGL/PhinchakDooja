@@ -77,6 +77,16 @@ client.on('messageCreate', async (message) => {
 			rows.push(new ActionRowBuilder().addComponents(buttons.slice(i, i + 5)));
 		}
 
+		//Stop Button
+		rows.push(
+			new ActionRowBuilder().addComponents(
+				new ButtonBuilder()
+					.setCustomId('Stop')
+					.setLabel('Stop')
+					.setStyle(ButtonStyle.Danger)
+			)
+		);
+
 		// Send a message with buttons
 		await message.channel.send({
 			content: 'Choose an audio file to play:',
@@ -144,6 +154,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				player.stop();
 				voiceConnection.destroy();
 			}
+		}
+	});
+
+	client.on('messageCreate', async (message) => {
+		if (message.content === 'vc stop') {
+			player.stop();
 		}
 	});
 });
