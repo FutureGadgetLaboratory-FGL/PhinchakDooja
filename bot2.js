@@ -28,6 +28,7 @@ const client = new Client({
 });
 
 let voiceConnection; // Global variable to track the voice connection
+const activePlayers = new Map(); // Map to track active players
 
 client.once('ready', () => {
 	console.log('Bot is ready!');
@@ -138,6 +139,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 	player.play(resource);
 	voiceConnection.subscribe(player);
+
+	// Store the player in the active players map
+	activePlayers.set(interaction.customId, player);
 
 	await interaction.deferUpdate();
 	// await interaction.followUp(`Now playing: ${selectedFile}`);
