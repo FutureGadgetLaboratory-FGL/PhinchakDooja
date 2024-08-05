@@ -40,3 +40,4 @@ jobs:
           registry-password: ${{ secrets.REGISTRY_PASSWORD }}
           name: phinchakdooja
           location: "central india"
+          restart-policy: OnFailure
