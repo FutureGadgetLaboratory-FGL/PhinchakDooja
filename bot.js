@@ -124,12 +124,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	// Get the selected audio file
 	const selectedFile = audioFiles[fileIndex];
 
-	if (!selectedFile) {
-		interaction.reply({
-			content: 'No audio file found!',
-		});
-		return;
-	}
+	if (!selectedFile) return;
+
 	// Get the member's voice channel
 	const voiceChannel = interaction.member.voice.channel;
 
