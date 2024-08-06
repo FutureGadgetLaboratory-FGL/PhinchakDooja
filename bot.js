@@ -17,16 +17,16 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
-//******************Code to deploy this on Render*******************************
+// //******************Code to deploy this on Render*******************************
 
-const express = require('express');
-const app = express();
+// const express = require('express');
+// const app = express();
 
-app.listen(4000, () => {
-	console.log(`Listening on port 4000`);
-});
+// app.listen(4000, () => {
+// 	console.log(`Listening on port 4000`);
+// });
 
-//*******************code to deploy on render ends here*************************
+// //*******************code to deploy on render ends here*************************
 
 const client = new Client({
 	intents: [
