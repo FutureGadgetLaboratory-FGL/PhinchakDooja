@@ -91,7 +91,7 @@ client.on('messageCreate', async (message) => {
 			rows.push(new ActionRowBuilder().addComponents(buttons.slice(i, i + 5)));
 		}
 
-		//Stop Button
+		//Stop Button at the end
 		rows.push(
 			new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
@@ -113,8 +113,6 @@ client.on('messageCreate', async (message) => {
 client.on(Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isButton()) return;
 
-	// if (interaction.customId === 'Stop') return;
-
 	// Extract the audio file index from the button ID
 	const fileIndex = parseInt(interaction.customId.split('_')[1]);
 
@@ -126,8 +124,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	// Get the selected audio file
 	const selectedFile = audioFiles[fileIndex];
 
-	if (!selectedFile) return;
-
+	if (!selectedFile) {
+		interaction.reply({
+			content: 'No audio file found!',
+		});
+		return;
+	}
 	// Get the member's voice channel
 	const voiceChannel = interaction.member.voice.channel;
 
